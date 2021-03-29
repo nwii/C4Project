@@ -2,6 +2,41 @@ import numpy as np
 from scipy.signal import convolve2d
 
 
+def checkvalid(board, col):
+    """
+    Checks to see if top row is filled
+    :param col: int (0-6)
+    :return:
+    """
+    return board[0][col] == 0
+
+
+def getrow(board, col):
+    """
+    gets lowest unused row in column
+    :param col:
+    :return:
+    """
+    for r in range(5, -1, -1):
+        if board[r][col] == 0:
+            return r
+
+def checkwin(board, player):
+    """
+    Convolves true/false matrix with win conditions, checks if any are connected by 4
+    :param player:
+    :return:
+    """
+    winhorizontal = np.array([[1, 1, 1, 1]])
+    winvert = np.transpose(winhorizontal)
+    windiag1 = np.eye(4, dtype=int)
+    windiag2 = np.fliplr(windiag1)
+    wincons = [winhorizontal, winvert, windiag1, windiag2]
+    for wincon in wincons:
+        if (convolve2d(board == player, wincon, mode="valid") == 4).any():
+            return True
+    return False
+
 class game:
     def __init__(self):
         self.board = np.zeros((6,7))
@@ -9,45 +44,11 @@ class game:
         self.gameover = False
         self.winner = None
 
-        winhorizontal = np.array([[1, 1, 1, 1]])
-        winvert = np.transpose(winhorizontal)
-        windiag1 = np.eye(4, dtype=int)
-        windiag2 = np.fliplr(windiag1)
-        self.wincons = [winhorizontal, winvert, windiag1, windiag2]
-
     def show(self):
-        print("\n\n\n\n")
+        print("\n")
         print(self.board)
         pass
 
-    def checkwin(self, player):
-        """
-        Convolves true/false matrix with win conditions, checks if any are connected by 4
-        :param player:
-        :return:
-        """
-        for wincon in self.wincons:
-            if (convolve2d(self.board == player, wincon, mode="valid") == 4).any():
-                return True
-        return False
-
-    def checkvalid(self, col):
-        """
-        Checks to see if top row is filled
-        :param col: int (0-6)
-        :return:
-        """
-        return self.board[0][col] == 0
-
-    def getrow(self, col):
-        """
-        gets lowest unused row in column
-        :param col:
-        :return:
-        """
-        for r in range(5, -1, -1):
-            if self.board[r][col] == 0:
-                return r
 
     def makemove(self, col):
         """
@@ -59,11 +60,11 @@ class game:
         """
         player = (self.turn % 2)+1
 
-        if self.checkvalid(col):
-            row = self.getrow(col)
+        if checkvalid(self.board, col):
+            row = getrow(self.board, col)
             self.board[row][col] = player
 
-            if self.checkwin(player):
+            if checkwin(self.board, player):
                 self.winner = player
                 self.gameover = True
 
