@@ -40,6 +40,11 @@ class game:
         return self.board[0][col] == 0
 
     def getrow(self, col):
+        """
+        gets lowest unused row in column
+        :param col:
+        :return:
+        """
         for r in range(5, -1, -1):
             if self.board[r][col] == 0:
                 return r
