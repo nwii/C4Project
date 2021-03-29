@@ -5,8 +5,6 @@ from scipy.signal import convolve2d
 class game:
     def __init__(self):
         self.board = np.zeros((6,7))
-        # self.board1 = np.zeros((6,7))
-        # self.board2 = np.zeros((6,7))
         self.turn = 0 # player is (turn % 2)+1
         self.gameover = False
         self.winner = None
@@ -23,6 +21,11 @@ class game:
         pass
 
     def checkwin(self, player):
+        """
+        Convolves true/false matrix with win conditions, checks if any are connected by 4
+        :param player:
+        :return:
+        """
         for wincon in self.wincons:
             if (convolve2d(self.board == player, wincon, mode="valid") == 4).any():
                 return True
@@ -37,12 +40,15 @@ class game:
         return self.board[0][col] == 0
 
     def getrow(self, col):
-        for r in range(5, 0, -1):
+        for r in range(5, -1, -1):
             if self.board[r][col] == 0:
                 return r
 
     def makemove(self, col):
         """
+        checks if move is "overflowing",
+        puts player's "token" on the lowest free space
+        checks for win condition
         :param col: int (0-6), Column on board
         :return:
         """
@@ -57,7 +63,6 @@ class game:
                 self.gameover = True
 
             self.turn += 1
-        pass
 
 if __name__ == '__main__':
     g1 = game()
