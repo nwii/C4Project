@@ -34,6 +34,21 @@ class manual:
         move = int(input("make move: "))
         return move
 
+class CNN:
+    def __init__(self):
+        self.model = 0
+        pass
+    def train(self):
+        pass
+
+class CNNagent:
+    def __init__(self, model):
+        self.model = CNN
+        pass
+    def move(self):
+        pass
+
+
 if __name__ == '__main__':
     g1 = c4game.game()
     comp1 = RP(g1, 2)
