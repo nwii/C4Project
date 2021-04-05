@@ -49,8 +49,8 @@ class CNNagent:
         bestprob = 0
         move = 0
         for i in range(0, 8):
-            probability = model.predict
-            if probability > bestprob
+            probability = self.model.predict
+            if probability > bestprob:
                 move = i
         return move
 
