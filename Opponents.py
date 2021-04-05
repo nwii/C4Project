@@ -6,12 +6,11 @@ class RP:
     """
     Checks 1 move ahead for a game-ending move, if none found, uses random number
     """
-    def __init__(self, game, player):
+    def __init__(self, game):
         self.board = game.board
-        self.player = player
 
     def lookforend(self, move):
-        for testplayer in [self.player, (self.player % 2) +1]:
+        for testplayer in [1, 2]:
             for i in range(0,7):
                 testboard = self.board
                 if c4game.checkvalid(testboard, i):
@@ -23,10 +22,16 @@ class RP:
                     testboard[row][i] = 0
         return move
 
-    def makemove(self):
+    def move(self):
         move = rand.randint(0,6)
         move = self.lookforend(move)
 
+        return move
+
+
+class manual:
+    def move(self):
+        move = int(input("make move: "))
         return move
 
 if __name__ == '__main__':

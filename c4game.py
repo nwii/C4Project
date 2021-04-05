@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.signal import convolve2d
-
+import Opponents as op
 
 def checkvalid(board, col):
     """
@@ -20,6 +20,7 @@ def getrow(board, col):
     for r in range(5, -1, -1):
         if board[r][col] == 0:
             return r
+
 
 def checkwin(board, player):
     """
@@ -45,7 +46,7 @@ class game:
         self.winner = None
 
     def show(self):
-        print("\n")
+        print("")
         print(self.board)
         pass
 
@@ -58,7 +59,7 @@ class game:
         :param col: int (0-6), Column on board
         :return:
         """
-        player = (self.turn % 2)+1
+        player = (self.turn % 2) + 1
 
         if checkvalid(self.board, col):
             row = getrow(self.board, col)
@@ -70,9 +71,33 @@ class game:
 
             self.turn += 1
 
+class gamecontrol:
+    """
+    game is a game object
+    Player 1 should have a .move (0-6)
+    """
+    def __init__(self, game, Player1, Player2):
+        self.game = game
+        self.player1 = Player1
+        self.player2 = Player2
+        self.history = []
+
+    def playgame(self):
+        player = self.player1
+        while not self.game.gameover:
+            move = player.move
+            self.game.makemove(move)
+            if player == self.player1:
+                player = self.player2
+            else:
+                player = self.player1
+        return self.game.winner
+
+
+
 if __name__ == '__main__':
     g1 = game()
-    while not g1.gameover:
-        g1.makemove(int(input("make move: ")))
-        g1.show()
-    print("winner: {}".format(g1.winner))
+    player1 = op.manual()
+    player2 = op.RP(g1,1)
+    control = gamecontrol(g1, player1, player2)
+    print("winner: {}".format(control.playgame()))
