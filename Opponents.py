@@ -1,5 +1,6 @@
 import random as rand
 import c4game
+import keras
 
 
 class RP:
