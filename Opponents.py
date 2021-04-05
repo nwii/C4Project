@@ -26,7 +26,6 @@ class RP:
     def move(self):
         move = rand.randint(0,6)
         move = self.lookforend(move)
-
         return move
 
 
@@ -37,8 +36,8 @@ class manual:
 
 class CNN:
     def __init__(self):
-        self.model = 0
-        pass
+        self.model = None
+
     def train(self):
         pass
 
@@ -47,7 +46,13 @@ class CNNagent:
         self.model = CNN
         pass
     def move(self):
-        pass
+        bestprob = 0
+        move = 0
+        for i in range(0, 8):
+            probability = model.predict
+            if probability > bestprob
+                move = i
+        return move
 
 
 if __name__ == '__main__':
