@@ -30,7 +30,11 @@ class RP:
 
 
 class manual:
+    def __init__(self, game):
+        self.game = game
+
     def move(self):
+        self.game.show()
         move = int(input("make move: "))
         return move
 

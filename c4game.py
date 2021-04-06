@@ -85,7 +85,7 @@ class gamecontrol:
     def playgame(self):
         player = self.player1
         while not self.game.gameover:
-            move = player.move
+            move = player.move()
             self.game.makemove(move)
             if player == self.player1:
                 player = self.player2
@@ -97,7 +97,8 @@ class gamecontrol:
 
 if __name__ == '__main__':
     g1 = game()
-    player1 = op.manual()
-    player2 = op.RP(g1,1)
+    player1 = op.manual(g1)
+    player2 = op.RP(g1)
     control = gamecontrol(g1, player1, player2)
     print("winner: {}".format(control.playgame()))
+    g1.show()
