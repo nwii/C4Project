@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 from scipy.signal import convolve2d
 import Opponents as op
 
@@ -44,12 +45,23 @@ class game:
         self.turn = 0 # player is (turn % 2)+1
         self.gameover = False
         self.winner = None
+        self.history = []
+
+    def reset(self):
+        self.board = np.zeros((6, 7))
+        self.turn = 0
+        self.gameover = False
+        self.winner = None
+        self.history = []
 
     def show(self):
         print("")
         print(self.board)
         pass
 
+    def showhis(self):
+        for i in self.history:
+            print(i)
 
     def makemove(self, col):
         """
@@ -64,12 +76,22 @@ class game:
         if checkvalid(self.board, col):
             row = getrow(self.board, col)
             self.board[row][col] = player
+            self.history.append(copy.deepcopy(self.board))
 
             if checkwin(self.board, player):
                 self.winner = player
                 self.gameover = True
 
             self.turn += 1
+        else:
+            checktie = True
+            for i in range(0, 7):
+                if checkvalid(self.board, i):
+                    checktie = False
+            if checktie:
+                self.winner = 0
+                self.gameover = True
+
 
 class gamecontrol:
     """
@@ -80,7 +102,6 @@ class gamecontrol:
         self.game = game
         self.player1 = Player1
         self.player2 = Player2
-        self.history = []
 
     def playgame(self):
         player = self.player1
@@ -91,14 +112,35 @@ class gamecontrol:
                 player = self.player2
             else:
                 player = self.player1
-        return self.game.winner
+        winner = copy.deepcopy(self.game.winner)
+        hist = copy.deepcopy(self.game.history)
+        #print(self.game.board)
+        self.game.reset()
+        return winner, hist
 
+    def playmultiple(self, iterations):
+        """
+        plays i games,
+        For each game: (takes the history from each game, assigns winner label to all boards on that game)
+        :param iterations: int
+        :return: [[winner, boardstate], [winner, boardstate] ...]
+        """
+        hist = []
+        for i in range(0,iterations+1):
+            localwinner, localhis = self.playgame()
+            for i in localhis:
+                hist.append([i, localwinner])
+        return hist
 
 
 if __name__ == '__main__':
     g1 = game()
-    player1 = op.manual(g1)
+    player1 = op.RP(g1)
     player2 = op.RP(g1)
     control = gamecontrol(g1, player1, player2)
-    print("winner: {}".format(control.playgame()))
-    g1.show()
+    xdata = control.playmultiple(600)
+    print(len(xdata))
+    # winner, history = control.playgame()
+    # print("winner: {}".format(winner))
+    # for i in history:
+    #     print(i)
