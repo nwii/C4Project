@@ -114,7 +114,6 @@ class gamecontrol:
                 player = self.player1
         winner = copy.deepcopy(self.game.winner)
         hist = copy.deepcopy(self.game.history)
-        #print(self.game.board)
         self.game.reset()
         return winner, hist
 
@@ -125,12 +124,14 @@ class gamecontrol:
         :param iterations: int
         :return: [[winner, boardstate], [winner, boardstate] ...]
         """
-        hist = []
+        x = []
+        y = []
         for i in range(0,iterations+1):
             localwinner, localhis = self.playgame()
             for i in localhis:
-                hist.append([i, localwinner])
-        return hist
+                y.append(localwinner)
+                x.append(i.flatten())
+        return x, y
 
 
 if __name__ == '__main__':
@@ -138,8 +139,10 @@ if __name__ == '__main__':
     player1 = op.RP(g1)
     player2 = op.RP(g1)
     control = gamecontrol(g1, player1, player2)
-    xdata = control.playmultiple(600)
+    xdata, ydata = control.playmultiple(200)
     print(len(xdata))
+    print(len(ydata))
+    print(xdata[10])
     # winner, history = control.playgame()
     # print("winner: {}".format(winner))
     # for i in history:
