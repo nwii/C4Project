@@ -30,15 +30,9 @@ if __name__ == '__main__':
         # For each training interval...
         
         # First, run 100 games to collect data
-        for g in range(0, gamesPerInterval):
-            g1 = c4g.game()
-            player1.board = g1.board # set new player models' boards
-            player2.board = g1.board
-            control = c4g.gamecontrol(g1, player1, player2)
-            winner = control.playgame()
-            print("winner: {}".format(winner))
-            localWinDict[winner] += 1
-            #p2.train(X_train_from_this_game, y_train_from_this_game)
+
+        control =c4g.gamecontrol(g1, player1, player2)
+        xdata, ydata, wins = control.playmultiple(600)
             
         # Now, after the 100 games, select next interval's players based on winners
         #print("P1 wins: {}".format(localWinDict[1]))

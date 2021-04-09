@@ -2,6 +2,7 @@ import numpy as np
 import copy
 from scipy.signal import convolve2d
 import Opponents as op
+import tensorflow as tf
 
 def checkvalid(board, col):
     """
@@ -135,8 +136,11 @@ class gamecontrol:
                 wins += 1
             for j in localhis:
                 y.append(localwinner)
-                x.append(j.flatten())
-        X = np.array(x)
+                x.append(j)
+                # x.append(j.flatten())
+        X = np.dstack(x)
+        X = np.rollaxis(X, -1)
+        # X = np.array(x)
         Y = np.array(y)
         return X, Y, wins
 
@@ -146,12 +150,16 @@ if __name__ == '__main__':
     player1 = op.RP(g1)
     player2 = op.RP(g1)
     control = gamecontrol(g1, player1, player2)
-    xdata, ydata, wins= control.playmultiple(200)
-    print(len(xdata))
-    print(len(ydata))
-    print(wins)
-    print(xdata[10])
-    print(ydata[10])
+    xdata, ydata, wins= control.playmultiple(600)
+
+    xdata = tf.expand_dims(xdata, axis=-1, )
+    print(xdata.shape)
+    model = op.CNN()
+    model.train(xdata, ydata)
+
+
+
+
     # winner, history = control.playgame()
     # print("winner: {}".format(winner))
     # for i in history:
