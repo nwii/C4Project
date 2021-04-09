@@ -2,6 +2,7 @@ import random as rand
 import c4game
 import keras
 import copy
+import tensorflow as tf
 
 
 class RP:
@@ -43,7 +44,7 @@ class CNN:
     def __init__(self):
         self.model = keras.Sequential(
             [
-                keras.layers.Conv2D(64, (4,4), activation="relu", input_shape=(6,7,1)), # 64 nodes, kernel_size = filter_size = 4x4, 6x7 grid with 1 dimension
+                keras.layers.Conv2D(64, (4,4), activation="relu", input_shape=[6,7,1]), # 64 nodes, kernel_size = filter_size = 4x4, 6x7 grid with 1 dimension
                 keras.layers.Flatten(),
                 keras.layers.Dense(42, activation="relu"),
                 keras.layers.Dense(42, activation="relu"),
@@ -62,16 +63,35 @@ class CNN:
         self.model.fit(X_train, y_train, epochs=8, validation_split=0.2)
 
 class CNNagent:
-    def __init__(self, model):
+    def __init__(self, model, game):
         self.model = model
+        self.game = game
         pass
     def move(self):
         bestprob = 0
         move = 0
+        possibleMoves = self.game.getnextmoves()
+        #print(possibleMoves[0])
+        #print(possibleMoves[1])
+        #print(possibleMoves[2])
+        #print(possibleMoves[3])
+        #print(possibleMoves[4])
+        #print(possibleMoves[5])
+        #print(possibleMoves[6])
         for i in range(0, 7):
-            probability = self.model.predict()
-            if probability > bestprob:
+            #print("Predicting move for the following board config: ")
+            #print(possibleMoves[i])
+            possibleMoves[i] = tf.expand_dims(possibleMoves[i], axis=-1)
+            possibleMoves[i] = tf.expand_dims(possibleMoves[i], axis=0)
+            #print(possibleMoves[i])
+            prediction = self.model.model.predict(possibleMoves[i])
+            #print("I DID IT!!!!!!")
+            #print(prediction)
+            #print(prediction.shape)
+            #print(prediction[0][1])
+            if prediction[0][1] > bestprob: # 1 SHOULD BE REPLACED BY CNN's PLAYER NUMBER
                 move = i
+                bestprob = prediction[0][1]
         return move
 
 

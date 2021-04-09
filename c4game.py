@@ -63,6 +63,23 @@ class game:
     def showhis(self):
         for i in self.history:
             print(i)
+            
+    def getnextmoves(self):
+        nextMoves = [] # init. array of possible next moves to return
+        boardBackup = copy.deepcopy(self.board)
+        #turnBackup
+        #print("Board backup: ")
+        #print(boardBackup)
+        for i in range(0,7):
+            #print("Making a temp move: ")
+            self.makemove(i)
+            #print(self.board)
+            nextMoves.append(self.board)
+            #print("Restoring board backup: ")
+            self.board = copy.deepcopy(boardBackup)
+            #print(self.board)
+            self.turn = 0
+        return nextMoves
 
     def makemove(self, col):
         """
