@@ -126,13 +126,19 @@ class gamecontrol:
         """
         x = []
         y = []
+        wins = 0
         for i in range(0,iterations+1):
             localwinner, localhis = self.playgame()
-            for i in localhis:
+            if localwinner == 1:
+                wins -= 1
+            elif localwinner == 2:
+                wins += 1
+            for j in localhis:
                 y.append(localwinner)
-                x.append(i.flatten())
+                x.append(j.flatten())
         X = np.array(x)
-        return X, y
+        Y = np.array(y)
+        return X, Y, wins
 
 
 if __name__ == '__main__':
@@ -140,10 +146,12 @@ if __name__ == '__main__':
     player1 = op.RP(g1)
     player2 = op.RP(g1)
     control = gamecontrol(g1, player1, player2)
-    xdata, ydata = control.playmultiple(200)
+    xdata, ydata, wins= control.playmultiple(200)
     print(len(xdata))
     print(len(ydata))
+    print(wins)
     print(xdata[10])
+    print(ydata[10])
     # winner, history = control.playgame()
     # print("winner: {}".format(winner))
     # for i in history:

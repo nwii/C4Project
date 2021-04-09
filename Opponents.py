@@ -1,6 +1,7 @@
 import random as rand
 import c4game
 import keras
+import copy
 
 
 class RP:
@@ -8,7 +9,7 @@ class RP:
     Checks 1 move ahead for a game-ending move, if none found, uses random number
     """
     def __init__(self, game):
-        self.board = game.board
+        self.board = copy.deepcopy(game.board)
 
     def lookforend(self, move):
         for testplayer in [1, 2]:
@@ -67,7 +68,7 @@ class CNNagent:
     def move(self):
         bestprob = 0
         move = 0
-        for i in range(0, 8):
+        for i in range(0, 7):
             probability = self.model.predict
             if probability > bestprob:
                 move = i

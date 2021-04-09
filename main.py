@@ -51,8 +51,8 @@ if __name__ == '__main__':
             
             
         
-        localWinDict[1] = 0
-        localWinDict[2] = 0
+            localWinDict[1] = 0
+            localWinDict[2] = 0
         
         
 
