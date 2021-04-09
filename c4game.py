@@ -150,9 +150,10 @@ if __name__ == '__main__':
     player1 = op.RP(g1)
     player2 = op.RP(g1)
     control = gamecontrol(g1, player1, player2)
-    xdata, ydata, wins= control.playmultiple(600)
+    xdata, ydata, wins = control.playmultiple(1000)
 
-    xdata = tf.expand_dims(xdata, axis=-1, )
+    xdata = tf.expand_dims(xdata, axis=-1)
+    ydata = tf.keras.utils.to_categorical(ydata, 3)
     print(xdata.shape)
     model = op.CNN()
     model.train(xdata, ydata)

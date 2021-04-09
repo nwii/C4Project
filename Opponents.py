@@ -47,7 +47,7 @@ class CNN:
                 keras.layers.Flatten(),
                 keras.layers.Dense(42, activation="relu"),
                 keras.layers.Dense(42, activation="relu"),
-                keras.layers.Dense(1, activation="softmax") # 7 ~ num. outputs (each possible column). Each will have its own probability due to the softmax activation.
+                keras.layers.Dense(3, activation="softmax") # 7 ~ num. outputs (each possible column). Each will have its own probability due to the softmax activation.
                 
                 # Quote from CNN 0-9 digit classifier:
                 # "We will have 10 nodes in our output layer, one for each possible outcome (0-9). The activation is "softmax". Softmax makes the output sum up to 1 so the output can be interpreted as probabilities. The model will then make its prediction based on which option has the highest probability".
@@ -59,7 +59,7 @@ class CNN:
         # Categorical Crossentropy is popular for classification, so it might be worthwhile to experiment with other loss functions too. A low categorical crossentropy value means it's performing well.
 
     def train(self, X_train, y_train):
-        self.model.fit(X_train, y_train, epochs=3)
+        self.model.fit(X_train, y_train, epochs=8, validation_split=0.2)
 
 class CNNagent:
     def __init__(self, model):
