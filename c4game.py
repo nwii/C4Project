@@ -131,7 +131,8 @@ class gamecontrol:
             for i in localhis:
                 y.append(localwinner)
                 x.append(i.flatten())
-        return x, y
+        X = np.array(x)
+        return X, y
 
 
 if __name__ == '__main__':
