@@ -10,8 +10,8 @@ numpy.set_printoptions(threshold=sys.maxsize) # debug, forces terminal to print 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
 
-    numIntervals = 40   # how many training intervals to run through
-    numGames = 100      # how many games per training interval
+    numIntervals = 100   # how many training intervals to run through
+    numGames = 100        # how many games per training interval
 
     g1 = c4g.game()
     
@@ -44,10 +44,15 @@ if __name__ == '__main__':
         endTS = time.time()
         print("Time for " + str(numGames) + " games: " + str(endTS-startTS))
         
+        #print("\n\nTRAINING DATA BOARDS: \n")
+        #print(xdata)
+        #print("\n\n")
+        
         xdata = tf.expand_dims(xdata, axis=-1)
         ydata = tf.keras.utils.to_categorical(ydata,3)
         print("xdata shape: " + str(xdata.shape))
         print("ydata shape: " + str(ydata.shape))
+        
         
         print("\nP1 Wins: {}".format(p1wins))
         print("P2 Wins: {}".format(p2wins))

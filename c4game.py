@@ -81,7 +81,7 @@ class game:
             self.turn = 0
         return nextMoves
 
-    def makemove(self, col, test):
+    def makemove(self, col, test=False):
         """
         checks if move is "overflowing",
         puts player's "token" on the lowest free space
@@ -96,13 +96,14 @@ class game:
         if checkvalid(self.board, col):
             row = getrow(self.board, col)
             self.board[row][col] = player
-            if test == False:
-                self.history = []
-                self.history.append(copy.deepcopy(self.board))
+            
 
             if checkwin(self.board, player):
-                self.winner = player
-                self.gameover = True
+                if test == False:
+                    self.history = []
+                    self.history.append(copy.deepcopy(self.board))
+                    self.winner = player
+                    self.gameover = True
 
             self.turn += 1
         else:
@@ -111,8 +112,12 @@ class game:
                 if checkvalid(self.board, i):
                     checktie = False
             if checktie:
-                self.winner = 0
-                self.gameover = True
+                if test == False:
+                    self.history = []
+                    self.history.append(copy.deepcopy(self.board))
+                
+                    self.winner = 0
+                    self.gameover = True
 
 
 class gamecontrol:
