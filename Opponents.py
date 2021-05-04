@@ -2,6 +2,10 @@ import random as rand
 import c4game
 import keras
 import copy
+import tensorflow as tf
+import numpy as np
+
+rand.seed()
 
 
 class RP:
@@ -9,12 +13,13 @@ class RP:
     Checks 1 move ahead for a game-ending move, if none found, uses random number
     """
     def __init__(self, game):
+        self.game = game
         self.board = copy.deepcopy(game.board)
 
     def lookforend(self, move):
-        for testplayer in [1, 2]:
+        for testplayer in [2, 1]:
             for i in range(0,7):
-                testboard = self.board
+                testboard = copy.deepcopy(self.game.board)
                 if c4game.checkvalid(testboard, i):
                     row = c4game.getrow(testboard, i)
                     testboard[row][i] = testplayer
@@ -27,6 +32,9 @@ class RP:
     def move(self):
         move = rand.randint(0,6)
         move = self.lookforend(move)
+        while(c4game.checkvalid(copy.deepcopy(self.game.board),move) == False): # keep generating moves until a valid one is found
+            move = rand.randint(0,6)
+            move = self.lookforend(move)
         return move
 
 
@@ -59,19 +67,33 @@ class CNN:
         # Categorical Crossentropy is popular for classification, so it might be worthwhile to experiment with other loss functions too. A low categorical crossentropy value means it's performing well.
 
     def train(self, X_train, y_train):
-        self.model.fit(X_train, y_train, epochs=8, validation_split=0.2)
+        #X_train = X_train.reshape(-1, 6, 7, 1)
+        self.model.fit(X_train, y_train, epochs=3, validation_split=0.2)
 
 class CNNagent:
-    def __init__(self, model):
+    def __init__(self, model, game):
         self.model = model
-        pass
+        self.game = game
+
     def move(self):
         bestprob = 0
         move = 0
+        possibleMoves = self.game.getnextmoves()
+        illegalMoves = []
+        #print(possibleMoves)
+
         for i in range(0, 7):
-            probability = self.model.predict()
-            if probability > bestprob:
+            if np.array_equal(possibleMoves[i],self.game.board): # if move is invalid
+                illegalMoves.append(i)
+            possibleMoves[i] = tf.expand_dims(possibleMoves[i], axis=-1)
+            possibleMoves[i] = tf.expand_dims(possibleMoves[i], axis=0)
+            prediction = self.model.model.predict(possibleMoves[i])
+            #print("PREDICTION RESULTS: ")
+            #print(prediction)
+            
+            if prediction[0][2] > bestprob and i not in illegalMoves: # 1 SHOULD BE REPLACED BY CNN's PLAYER NUMBER
                 move = i
+                bestprob = prediction[0][2]
         return move
 
 

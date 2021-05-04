@@ -63,8 +63,25 @@ class game:
     def showhis(self):
         for i in self.history:
             print(i)
+            
+    def getnextmoves(self):
+        nextMoves = [] # init. array of possible next moves to return
+        boardBackup = copy.deepcopy(self.board)
+        #turnBackup
+        #print("Board backup: ")
+        #print(boardBackup)
+        for i in range(0,7):
+            #print("Making a temp move: ")
+            self.makemove(i, True)
+            #print(self.board)
+            nextMoves.append(self.board)
+            #print("Restoring board backup: ")
+            self.board = copy.deepcopy(boardBackup)
+            #print(self.board)
+            self.turn = 0
+        return nextMoves
 
-    def makemove(self, col):
+    def makemove(self, col, test):
         """
         checks if move is "overflowing",
         puts player's "token" on the lowest free space
@@ -73,11 +90,15 @@ class game:
         :return:
         """
         player = (self.turn % 2) + 1
+        #print("HISTORY: ")
+        #self.showhis()
 
         if checkvalid(self.board, col):
             row = getrow(self.board, col)
             self.board[row][col] = player
-            self.history.append(copy.deepcopy(self.board))
+            if test == False:
+                self.history = []
+                self.history.append(copy.deepcopy(self.board))
 
             if checkwin(self.board, player):
                 self.winner = player
@@ -104,15 +125,17 @@ class gamecontrol:
         self.player1 = Player1
         self.player2 = Player2
 
-    def playgame(self):
+    def playgame(self, show=True):
         player = self.player1
         while not self.game.gameover:
             move = player.move()
-            self.game.makemove(move)
+            self.game.makemove(move, False)
             if player == self.player1:
                 player = self.player2
             else:
                 player = self.player1
+            if show:
+                self.game.show()
         winner = copy.deepcopy(self.game.winner)
         hist = copy.deepcopy(self.game.history)
         self.game.reset()
@@ -127,13 +150,14 @@ class gamecontrol:
         """
         x = []
         y = []
-        wins = 0
+        p1wins = 0
+        p2wins = 0
         for i in range(0,iterations+1):
-            localwinner, localhis = self.playgame()
+            localwinner, localhis = self.playgame(show=False)
             if localwinner == 1:
-                wins -= 1
+                p1wins += 1
             elif localwinner == 2:
-                wins += 1
+                p2wins += 1
             for j in localhis:
                 y.append(localwinner)
                 x.append(j)
@@ -142,7 +166,7 @@ class gamecontrol:
         X = np.rollaxis(X, -1)
         # X = np.array(x)
         Y = np.array(y)
-        return X, Y, wins
+        return X, Y, p1wins, p2wins
 
 
 if __name__ == '__main__':
