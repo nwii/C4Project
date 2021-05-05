@@ -32,9 +32,14 @@ class RP:
     def move(self):
         move = rand.randint(0,6)
         move = self.lookforend(move)
+        attemptedMoves = [0,0,0,0,0,0,0]
         while(c4game.checkvalid(copy.deepcopy(self.game.board),move) == False): # keep generating moves until a valid one is found
             move = rand.randint(0,6)
             move = self.lookforend(move)
+            attemptedMoves[move] = 1
+            if 0 not in attemptedMoves: # tie game
+                print("\nERROR: RP cannot find move")
+                return move
         return move
 
 
@@ -48,18 +53,21 @@ class manual:
         return move
 
 class CNN:
-    def __init__(self):
-        self.model = keras.Sequential(
-            [
-                keras.layers.Conv2D(64, (4,4), activation="relu", input_shape=(6,7,1)), # 64 nodes, kernel_size = filter_size = 4x4, 6x7 grid with 1 dimension
-                keras.layers.Flatten(),
-                keras.layers.Dense(42, activation="relu"),
-                keras.layers.Dense(42, activation="relu"),
-                keras.layers.Dense(3, activation="softmax") # 7 ~ num. outputs (each possible column). Each will have its own probability due to the softmax activation.
-                
-                # Quote from CNN 0-9 digit classifier:
-                # "We will have 10 nodes in our output layer, one for each possible outcome (0-9). The activation is "softmax". Softmax makes the output sum up to 1 so the output can be interpreted as probabilities. The model will then make its prediction based on which option has the highest probability".
-            ])
+    def __init__(self, custom=None):
+        if custom == None:
+            self.model = keras.Sequential(
+                [
+                    keras.layers.Conv2D(64, (4,4), activation="relu", input_shape=(6,7,1)), # 64 nodes, kernel_size = filter_size = 4x4, 6x7 grid with 1 dimension
+                    keras.layers.Flatten(),
+                    keras.layers.Dense(42, activation="relu"),
+                    keras.layers.Dense(42, activation="relu"),
+                    keras.layers.Dense(3, activation="softmax") # 7 ~ num. outputs (each possible column). Each will have its own probability due to the softmax activation.
+
+                    # Quote from CNN 0-9 digit classifier:
+                    # "We will have 10 nodes in our output layer, one for each possible outcome (0-9). The activation is "softmax". Softmax makes the output sum up to 1 so the output can be interpreted as probabilities. The model will then make its prediction based on which option has the highest probability".
+                ])
+        else:
+            self.model = custom
             
         self.model.compile(loss='categorical_crossentropy', optimizer="adam", metrics=['accuracy'])
         
@@ -87,13 +95,13 @@ class CNNagent:
                 illegalMoves.append(i)
             possibleMoves[i] = tf.expand_dims(possibleMoves[i], axis=-1)
             possibleMoves[i] = tf.expand_dims(possibleMoves[i], axis=0)
-            prediction = self.model.model.predict(possibleMoves[i])
-            #print("PREDICTION RESULTS: ")
-            #print(prediction)
             
-            if prediction[0][2] > bestprob and i not in illegalMoves: # 1 SHOULD BE REPLACED BY CNN's PLAYER NUMBER
-                move = i
-                bestprob = prediction[0][2]
+            if i not in illegalMoves:
+                prediction = self.model.model.predict(possibleMoves[i])
+            
+                if prediction[0][2] > bestprob: # 1 SHOULD BE REPLACED BY CNN's PLAYER NUMBER
+                    move = i
+                    bestprob = prediction[0][2]
         return move
 
 

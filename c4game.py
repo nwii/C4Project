@@ -3,6 +3,8 @@ import copy
 from scipy.signal import convolve2d
 import Opponents as op
 import tensorflow as tf
+import time
+import sys
 
 def checkvalid(board, col):
     """
@@ -46,14 +48,16 @@ class game:
         self.turn = 0 # player is (turn % 2)+1
         self.gameover = False
         self.winner = None
-        self.history = []
+        self.history = [np.zeros((6,7)), np.zeros((6,7))]
+        self.nextIndex = True
 
     def reset(self):
         self.board = np.zeros((6, 7))
         self.turn = 0
         self.gameover = False
         self.winner = None
-        self.history = []
+        self.history = [np.zeros((6,7)), np.zeros((6,7))]
+        self.nextIndex = True
 
     def show(self):
         print("")
@@ -90,7 +94,6 @@ class game:
         :return:
         """
         player = (self.turn % 2) + 1
-        #print("HISTORY: ")
         #self.showhis()
 
         if checkvalid(self.board, col):
@@ -100,12 +103,14 @@ class game:
 
             if checkwin(self.board, player):
                 if test == False:
-                    self.history = []
-                    self.history.append(copy.deepcopy(self.board))
+                    self.history[1] = copy.deepcopy(self.board)
                     self.winner = player
                     self.gameover = True
+                    self.turn += 1
+                    return
 
             self.turn += 1
+            
         else:
             checktie = True
             for i in range(0, 7):
@@ -113,11 +118,12 @@ class game:
                     checktie = False
             if checktie:
                 if test == False:
-                    self.history = []
-                    self.history.append(copy.deepcopy(self.board))
-                
+                    self.history[1] = copy.deepcopy(self.board)
                     self.winner = 0
                     self.gameover = True
+                    return
+                
+        self.history[0] = copy.deepcopy(self.board)
 
 
 class gamecontrol:
@@ -157,6 +163,7 @@ class gamecontrol:
         y = []
         p1wins = 0
         p2wins = 0
+        tstart = time.time()
         for i in range(0,iterations+1):
             localwinner, localhis = self.playgame(show=False)
             if localwinner == 1:
@@ -167,6 +174,9 @@ class gamecontrol:
                 y.append(localwinner)
                 x.append(j)
                 # x.append(j.flatten())
+            tcur = time.time() - tstart
+            sys.stdout.write("\r" + "{:.2f}%   time: {:.0f} secs".format(100 * i / iterations, tcur))
+            sys.stdout.flush()
         X = np.dstack(x)
         X = np.rollaxis(X, -1)
         # X = np.array(x)
